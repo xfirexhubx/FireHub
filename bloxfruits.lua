@@ -9,7 +9,19 @@ local ToolEquipped = false
 local TargetingEnemy = false
 local CurrentTarget = nil
 
--- Create enhanced HUD controls
+-- HUD Variables
+local hudState = "normal" -- normal/minimized/closed
+local RapidFireRate = 0.25
+local RapidAttackTimer = nil
+
+-- Aim Features Variables
+local AimBotToggle = true
+local AimSkillLevel = 1
+local CamLockActive = false
+local EspActivated = false
+local AutoV4Enabled = false
+local AutoV3Enabled = false
+
 function CreateHUD()
     local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
     
@@ -35,236 +47,131 @@ function CreateHUD()
     closeButton.FontSize = Enum.FontSize.Size24
     closeButton.BackgroundColor3 = Color3.fromRGB(255, 15, 15) -- Red
     
-    -- Minimize button (-)
-    local minimizeButton = Instance.new("TextButton", background)
-    minimizeButton.Position = UDim2.new(0.95, -35, 0.975, -60)
-    minimizeButton.Size = UDim2.new(0, 20, 0, 20)
-    minimizeButton.Text = "-"
-    minimizeButton.FontSize = Enum.FontSize.Size24
-    minimizeButton.BackgroundColor3 = Color3.fromRGB(187, 187, 187) -- Gray
-    
     return {
         gui = screenGui,
         background = background,
         titleLabel = titleLabel,
-        closeButton = closeButton,
-        minimizeButton = minimizeButton
+        closeButton = closeButton
     }
 end
 
--- GUI State Management functions
-local hudState = "normal" -- normal/minimized/closed
-function SetHUDVisible(visible)
-    if visible then 
-        hud.background.Visible = true
+-- Aim Bot Implementation (Basic)
+function AimBot()
+    if AimBotToggle then
+        local targetPosition = CurrentTarget.HumanoidRootPart.Position
         
-        if hudState == "minimized" then
-            wait(0.1) -- Animation delay for UI smoothness
-            hud.background.Size = UDim2.new(1, -20, 0, 60)
+        game:GetService("RunService").Heartbeat:Connect(function() 
+            Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position, Vector3.new(targetPosition.X, Player.Character.Head.Position.Y - 0.25, targetPosition.Z))
             
-            hud.titleLabel.Text = "FireHub"
-            hud.titleLabel.BackgroundColor3 = Color3.fromRGB(255, 15, 15) -- Red
+            if TargetingEnemy then
+                AimAtTarget()
+                
+                -- Apply aim skill logic here
+                
+                wait(0.1)
+            end
             
-            hudState = "normal"
-        end
-    else 
-        hud.background.Visible = false
-        
-        if hudState == "normal" then
-            wait(0.1) -- Animation delay for UI smoothness
-            hud.background.Size = UDim2.new(1, -20, 0, 30)
-            
-            hud.titleLabel.Text = ""
-            hud.titleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0, 0) -- Clear
-            
-            hudState = "minimized"
-        end
+        end)
     end
+end
+
+-- Camera Lock Implementation (Basic)
+function CamLock()
+    if CamLockActive then
+        game.Workspace.CurrentCamera.CameraSubject = CurrentTarget.HumanoidRootPart
+        
+        -- Add camera smoothing if needed
+        
+        return true
+    else
+        game.Workspace.CurrentCamera.CameraSubject = Character.Head
+        
+        return false
+    end
+end
+
+-- ESP Implementation (Basic)
+function ToggleESP()
+    if EspActivated then
+        for _, v in pairs(game:GetService("Workspace"):GetChildren()) do 
+            local cFrame = Instance.new("BoxHandleAdornment",v)
+            cFrame.Name="AimBotESP"
+            cFrame.ZIndex=1000
+            
+            -- Calculate ESP size based on distance and aim skill level
+        end
+        
+        return true
+    else
+        for _, v in pairs(game:GetService("Workspace"):GetChildren()) do 
+            if v:FindFirstChild("AimBotESP") then
+                v.AimBotESP:Destroy()
+            end
+        end
+        
+        return false
+    end
+end
+
+-- Auto Kill Implementation (Basic)
+function AutoKillV4()
+    if AutoV4Enabled then
+        -- Implement logic for killing v4 when spotted
+        wait(0.1)
+    end
+    
+    if AutoV3Enabled then
+        -- Implement logic for killing v3 when spotted
+        
+        wait(0.2) -- Natural timing variation
+    end
+end
+
+-- GUI State Management functions
+function SetHUDVisible(visible)
+    hud.background.Visible = visible
     
     return visible
 end
 
--- Add event listeners to GUI controls
-hud.closeButton.MouseButton1Click:Connect(function()
-    SetHUDVisible(false)
-    
-    local tool = script.Parent
-    if tool and ToolEquipped then
+-- Main execution loop
+while true do
+    if TargetingEnemy and CurrentTarget then 
+        RapidAttackTimer = game:GetService("RunService").Heartbeat:wait(RapidFireRate)
         
-        wait(0.2) -- Allow attack timing adjustments
-    
+        local tool = script.Parent
+        
+        AimBot()
+        
+        CamLock()
+        
+        ToggleESP()
+        
+        -- Execute damage calculation here
+                
+        wait(0.2 + math.random() * 0.5) -- Natural timing variation
+    else
+        TargetingEnemy, _ = FindClosestEnemy()
+        
         if TargetingEnemy and CurrentTarget then 
-            RapidAttackTimer = game:GetService("RunService").Heartbeat:wait()
-            
-            local tool = script.Parent
-            
-            if not tool.Animation1 or tool.Animation1.AnimationId == "" then 
-                tool:Activate()
-            end
-            
-            wait(RapidFireRate) -- Natural timing variation
-        else
-            TargetingEnemy, _ = FindClosestEnemy()
-            RapidAttackTimer = game:GetService("RunService").Heartbeat:wait(rapidFireRate)
-            
-            if TargetingEnemy and CurrentTarget then 
-                AimAtTarget() 
-            
-                local tool = script.Parent
-                
-                -- Execute damage calculation here
-                
-                wait(0.2 + math.random() * rapidFireRate) -- Natural timing variation
-            end
-        end
-    end
-    
-    print("[+] UI Closed")
-end)
-
-hud.minimizeButton.MouseButton1Click:Connect(function()
-    SetHUDVisible(not hud.background.Visible)
-    
-    local tool = script.Parent
-    if ToolEquipped then 
-        AimAtTarget() -- Update positioning on toggle
-        
-        wait(0.2) -- Allow attack timing adjustments
-    
-        if TargetingEnemy and CurrentTarget then 
-            RapidAttackTimer = game:GetService("RunService").Heartbeat:wait()
-            
-            local tool = script.Parent
-            
-            if not tool.Animation1 or tool.Animation1.AnimationId == "" then 
-                tool:Activate()
-            end
-            
-            wait(RapidFireRate) -- Natural timing variation
-        else
-            TargetingEnemy, _ = FindClosestEnemy()
-            RapidAttackTimer = game:GetService("RunService").Heartbeat:wait(rapidFireRate)
-            
-            if TargetingEnemy and CurrentTarget then 
-                AimAtTarget() 
-            
-                local tool = script.Parent
-                
-                -- Execute damage calculation here
-                
-                wait(0.2 + math.random() * rapidFireRate) -- Natural timing variation
-            end
-        end
-    end
-    
-    print(hud.background.Visible and "[+] UI Minimized" or "[-] UI Expanded")
-end)
-
-hud.titleLabel.MouseButton1Click:Connect(function()
-    SetHUDVisible(not hud.background.Visible)
-    
-    local tool = script.Parent
-    
-    if TargetingEnemy then
-        
-        wait(0.2) -- Allow attack timing adjustments
-    
-        if CurrentTarget then 
             AimAtTarget() 
             
             local tool = script.Parent
             
-            if not tool.Animation1 or tool.Animation1.AnimationId == "" then 
-                tool:Activate()
-            end
-            
-            RapidAttackTimer = game:GetService("RunService").Heartbeat:wait(RapidFireRate)
-            
-            wait(0.2 + math.random() * rapidFireRate) -- Natural timing variation
-        end
-        
-    elseif ToolEquipped then
-        AimAtTarget() -- Update positioning on toggle
-        
-        TargetingEnemy, _ = FindClosestEnemy()
-        
-        if TargetingEnemy and CurrentTarget then 
-            RapidAttackTimer = game:GetService("RunService").Heartbeat:wait(RapidFireRate)
-            
-            local tool = script.Parent
-            
             -- Execute damage calculation here
                 
-            wait(0.2 + math.random() * rapidFireRate) -- Natural timing variation
+            wait(0.2 + math.random() * 0.5) -- Natural timing variation
         end
-        
-    else
-        AimAtTarget()
-        
-        TargetingEnemy, _ = FindClosestEnemy()
-        if TargetingEnemy then 
-            RapidAttackTimer = game:GetService("RunService").Heartbeat:wait(RapidFireRate)
-            
-            local tool = script.Parent
-            
-            -- Execute damage calculation here
-                
-            wait(0.2 + math.random() * rapidFireRate) -- Natural timing variation
-        end
-        
     end
     
-    print(hud.background.Visible and "[+] UI Minimized" or "[-] UI Expanded")
-end)
-
--- Add interactive elements to HUD
-local function CreateToggleSlider()
+    Attack() -- Rapid fire handling
     
-    if hud.toggleButton then return end
-    
-    local toggleFrame = Instance.new("Frame", hud.background)
-    toggleFrame.Position = UDim2.new(0, 5, -4, 16)
-    toggleFrame.Size = UDim2.new(0, 28, 0, 28)
-    
-    local toggleButton = Instance.new("TextButton", toggleFrame)
-    toggleButton.BackgroundColor3 = Color3.fromRGB(76, 169, 54) -- Green
-    toggleButton.Position = UDim2.new(0.125, -5, 0.125, -5)
-    toggleButton.Size = UDim2.new(0, 20, 0, 20)
-    toggleButton.Text = ""
-    
-    hud.toggleButton = {
-        button = toggleButton,
-        frame = toggleFrame
-    }
+    AutoKillV4()
 end
 
--- Setup draggable GUI elements with bounds checking
-local function MakeMovable(guiElement)
-    local dragging = false
-    
-    guiElement.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            
-            -- Capture cursor position offset to GUI element
-            local startPosX = guiElement.AbsolutePosition.X - input.Position.X
-            local startPosY = guiElement.AbsolutePosition.Y - input.Position.Y
-            
-            -- Set constraint bounds based on screen size
-            local maxX = math.min(
-                game.Workspace.CurrentCamera.ViewportSize.X,
-                600 + 25 -- right edge of screen minus offset from center
-            )
-            
-            local maxY = math.min(
-                game.Workspace.CurrentCamera.ViewportSize.Y, 
-                700 - 40 -- bottom edge of screen plus offset
-            )
-            
-            while dragging do
-                
-                wait(0.02)
-                
-                if input.UserInputType == Enum.UserInputType.MouseMovement then
-                    
-                    local
+-- GUI Setup and initialization
+local hud = CreateHUD()
+
+wait(3) -- Delay start to avoid detection
+
+SetHUDVisible(true)
