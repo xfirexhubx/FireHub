@@ -1,124 +1,225 @@
--- BloxFruits PvP Script with Enhanced GUI Control
+-- FireHub UI for Roblox Game: 2753915549
+local gameId = 2753915549
+if game.GameId ~= gameId then return end
 
-local Player = game.Players.LocalPlayer
-local Character = Player.Character
+-- Loadstring ready FireHub UI
+local FireHub = {}
 
-if not Character then return end -- Wait for character if needed
+-- Main GUI Creation
+local function CreateFireHubGUI()
+    -- ScreenGui
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "FireHub"
+    ScreenGui.Parent = game.CoreGui
+    ScreenGui.ResetOnSpawn = false
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local ToolEquipped = false
-local TargetingEnemy = false
-local CurrentTarget = nil
+    -- Main Frame
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
+    MainFrame.Size = UDim2.new(0, 500, 0, 350)
+    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+    MainFrame.Parent = ScreenGui
 
--- HUD Variables
-local hudState = "normal" -- normal/minimized/closed
-local RapidFireRate = 0.25
-local RapidAttackTimer = nil
+    -- Top Bar
+    local TopBar = Instance.new("Frame")
+    TopBar.Name = "TopBar"
+    TopBar.Size = UDim2.new(1, 0, 0, 40)
+    TopBar.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    TopBar.BorderSizePixel = 0
+    TopBar.Parent = MainFrame
 
-function CreateHUD()
-    local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-    
-    -- Background box (lime)
-    local background = Instance.new("Frame", screenGui)
-    background.Name = "MainPanel"
-    background.BackgroundTransparency = 0.75
-    background.BackgroundColor3 = Color3.fromRGB(124, 252, 0) -- Lime green
-    
-    -- Title label with toggle button
-    local titleLabel = Instance.new("TextButton", background)
-    titleLabel.Position = UDim2.new(0, -8, 0.975, -60)
-    titleLabel.Size = UDim2.new(1, 0, 0, 30)
-    titleLabel.BackgroundColor3 = Color3.fromRGB(255, 15, 15) -- Red
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.FontSize = Enum.FontSize.Size36
-    
-    -- Close button (red X)
-    local closeButton = Instance.new("TextButton", background)
-    closeButton.Position = UDim2.new(1, -30, 0.975, -60) 
-    closeButton.Size = UDim2.new(0, 20, 0, 20)
-    closeButton.Text = "X"
-    closeButton.FontSize = Enum.FontSize.Size24
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 15, 15) -- Red
-    
-    -- Minimize button (-)
-    local minimizeButton = Instance.new("TextButton", background)
-    minimizeButton.Position = UDim2.new(0.95, -35, 0.975, -60)
-    minimizeButton.Size = UDim2.new(0, 20, 0, 20)
-    minimizeButton.Text = "-"
-    minimizeButton.FontSize = Enum.FontSize.Size24
-    minimizeButton.BackgroundColor3 = Color3.fromRGB(187, 187, 187) -- Gray
-    
-    return {
-        gui = screenGui,
-        background = background,
-        titleLabel = titleLabel,
-        closeButton = closeButton,
-        minimizeButton = minimizeButton
-    }
+    -- Title
+    local Title = Instance.new("TextLabel")
+    Title.Name = "Title"
+    Title.Size = UDim2.new(0, 100, 1, 0)
+    Title.Position = UDim2.new(0, 10, 0, 0)
+    Title.BackgroundTransparency = 1
+    Title.Text = "FireHub"
+    Title.TextColor3 = Color3.fromRGB(255, 100, 0)
+    Title.TextScaled = true
+    Title.Font = Enum.Font.GothamBold
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = TopBar
+
+    -- Home Button
+    local HomeBtn = Instance.new("TextButton")
+    HomeBtn.Name = "Home"
+    HomeBtn.Size = UDim2.new(0, 60, 0, 30)
+    HomeBtn.Position = UDim2.new(0, 120, 0, 5)
+    HomeBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    HomeBtn.Text = "HOME"
+    HomeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    HomeBtn.TextScaled = true
+    HomeBtn.Font = Enum.Font.GothamBold
+    HomeBtn.BorderSizePixel = 0
+    HomeBtn.Parent = TopBar
+
+    -- PVP Button
+    local PvPBtn = Instance.new("TextButton")
+    PvPBtn.Name = "PVP"
+    PvPBtn.Size = UDim2.new(0, 60, 0, 30)
+    PvPBtn.Position = UDim2.new(0, 190, 0, 5)
+    PvPBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    PvPBtn.Text = "PVP"
+    PvPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PvPBtn.TextScaled = true
+    PvPBtn.Font = Enum.Font.GothamBold
+    PvPBtn.BorderSizePixel = 0
+    PvPBtn.Parent = TopBar
+
+    -- PVE Button
+    local PvEBtn = Instance.new("TextButton")
+    PvEBtn.Name = "PVE"
+    PvEBtn.Size = UDim2.new(0, 60, 0, 30)
+    PvEBtn.Position = UDim2.new(0, 260, 0, 5)
+    PvEBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    PvEBtn.Text = "PVE"
+    PvEBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PvEBtn.TextScaled = true
+    PvEBtn.Font = Enum.Font.GothamBold
+    PvEBtn.BorderSizePixel = 0
+    PvEBtn.Parent = TopBar
+
+    -- Misc Button
+    local MiscBtn = Instance.new("TextButton")
+    MiscBtn.Name = "Misc"
+    MiscBtn.Size = UDim2.new(0, 70, 0, 30)
+    MiscBtn.Position = UDim2.new(0, 330, 0, 5)
+    MiscBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    MiscBtn.Text = "Miscella."
+    MiscBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MiscBtn.TextScaled = true
+    MiscBtn.Font = Enum.Font.GothamBold
+    MiscBtn.BorderSizePixel = 0
+    MiscBtn.Parent = TopBar
+
+    -- Content Frame
+    local ContentFrame = Instance.new("Frame")
+    ContentFrame.Name = "ContentFrame"
+    ContentFrame.Size = UDim2.new(1, -20, 1, -60)
+    ContentFrame.Position = UDim2.new(0, 10, 0, 50)
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    ContentFrame.BorderSizePixel = 0
+    ContentFrame.Parent = MainFrame
+
+    -- Join Server Section
+    local JoinLabel = Instance.new("TextLabel")
+    JoinLabel.Name = "JoinLabel"
+    JoinLabel.Size = UDim2.new(1, -20, 0, 40)
+    JoinLabel.Position = UDim2.new(0, 10, 0, 20)
+    JoinLabel.BackgroundTransparency = 1
+    JoinLabel.Text = "JDIN OUR SERVER!"
+    JoinLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    JoinLabel.TextScaled = true
+    JoinLabel.Font = Enum.Font.GothamBold
+    JoinLabel.Parent = ContentFrame
+
+    -- Discord Link Button
+    local DiscordBtn = Instance.new("TextButton")
+    DiscordBtn.Name = "Discord"
+    DiscordBtn.Size = UDim2.new(1, -20, 0, 50)
+    DiscordBtn.Position = UDim2.new(0, 10, 0, 70)
+    DiscordBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    DiscordBtn.Text = "https://discord.gg/TGypsSGwpx"
+    DiscordBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DiscordBtn.TextScaled = true
+    DiscordBtn.Font = Enum.Font.Gotham
+    DiscordBtn.BorderSizePixel = 0
+    DiscordBtn.Parent = ContentFrame
+
+    -- Copy Link Section
+    local CopyLabel = Instance.new("TextLabel")
+    CopyLabel.Name = "CopyLabel"
+    CopyLabel.Size = UDim2.new(1, -20, 0, 30)
+    CopyLabel.Position = UDim2.new(0, 10, 0, 140)
+    CopyLabel.BackgroundTransparency = 1
+    CopyLabel.Text = "COPY.LINK"
+    CopyLabel.TextColor3 = Color3.fromRGB(255, 100, 0)
+    CopyLabel.TextScaled = true
+    CopyLabel.Font = Enum.Font.GothamBold
+    CopyLabel.Parent = ContentFrame
+
+    -- Copy Button
+    local CopyBtn = Instance.new("TextButton")
+    CopyBtn.Name = "CopyBtn"
+    CopyBtn.Size = UDim2.new(1, -20, 0, 40)
+    CopyBtn.Position = UDim2.new(0, 10, 0, 180)
+    CopyBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+    CopyBtn.Text = "COPY LINK"
+    CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CopyBtn.TextScaled = true
+    CopyBtn.Font = Enum.Font.GothamBold
+    CopyBtn.BorderSizePixel = 0
+    CopyBtn.Parent = ContentFrame
+
+    -- ESP Section
+    local ESPLabel = Instance.new("TextLabel")
+    ESPLabel.Name = "ESPLabel"
+    ESPLabel.Size = UDim2.new(1, -20, 0, 30)
+    ESPLabel.Position = UDim2.new(0, 10, 0, 240)
+    ESPLabel.BackgroundTransparency = 1
+    ESPLabel.Text = "ESP"
+    ESPLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ESPLabel.TextScaled = true
+    ESPLabel.Font = Enum.Font.GothamBold
+    ESPLabel.Parent = ContentFrame
+
+    -- ESP Toggle
+    local ESPToggle = Instance.new("TextButton")
+    ESPToggle.Name = "ESPToggle"
+    ESPToggle.Size = UDim2.new(1, -20, 0, 40)
+    ESPToggle.Position = UDim2.new(0, 10, 0, 270)
+    ESPToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    ESPToggle.Text = "ESP OFF"
+    ESPToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ESPToggle.TextScaled = true
+    ESPToggle.Font = Enum.Font.GothamBold
+    ESPToggle.BorderSizePixel = 0
+    ESPToggle.Parent = ContentFrame
+
+    return ScreenGui, DiscordBtn, CopyBtn, ESPToggle
 end
 
--- GUI State Management functions
-function SetHUDVisible(visible)
-    if visible then 
-        hud.background.Visible = true
-        
-        if hudState == "minimized" then
-            wait(0.1) -- Animation delay for UI smoothness
-            hud.background.Size = UDim2.new(1, -20, 0, 60)
-            
-            hud.titleLabel.Text = "FireHub"
-            hud.titleLabel.BackgroundColor3 = Color3.fromRGB(255, 15, 15) -- Red
-            
-            hudState = "normal"
-        end
-    else 
-        hud.background.Visible = false
-        
-        if hudState == "normal" then
-            wait(0.1) -- Animation delay for UI smoothness
-            hud.background.Size = UDim2.new(1, -20, 0, 30)
-            
-            hud.titleLabel.Text = ""
-            hud.titleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0, 0) -- Clear
-            
-            hudState = "minimized"
-        end
-    end
-    
-    return visible
-end
+-- Create the GUI
+local ScreenGui, DiscordBtn, CopyBtn, ESPToggle = CreateFireHubGUI()
 
--- Main execution loop
-while true do
-    if TargetingEnemy and CurrentTarget then 
-        RapidAttackTimer = game:GetService("RunService").Heartbeat:wait(RapidFireRate)
-        
-        local tool = script.Parent
-        
-        if not tool.Animation1 or tool.Animation1.AnimationId == "" then 
-            tool:Activate()
-        end
-        
-        wait(0.2 + math.random() * 0.5) -- Natural timing variation
+-- Discord button functionality
+DiscordBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://discord.gg/TGypsSGwpx")
+    DiscordBtn.Text = "Copied!"
+    wait(1)
+    DiscordBtn.Text = "https://discord.gg/TGypsSGwpx"
+end)
+
+-- Copy button functionality
+CopyBtn.MouseButton1Click:Connect(function()
+    setclipboard("FireHub Loadstring")
+    CopyBtn.Text = "Copied!"
+    wait(1)
+    CopyBtn.Text = "COPY LINK"
+end)
+
+-- ESP Toggle functionality
+local espEnabled = false
+ESPToggle.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    if espEnabled then
+        ESPToggle.Text = "ESP ON"
+        ESPToggle.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+        -- Add your ESP code here
+        print("ESP Enabled")
     else
-        TargetingEnemy, _ = FindClosestEnemy()
-        
-        if TargetingEnemy and CurrentTarget then 
-            AimAtTarget() 
-            
-            local tool = script.Parent
-            
-            -- Execute damage calculation here
-                
-            wait(0.2 + math.random() * 0.5) -- Natural timing variation
-        end
+        ESPToggle.Text = "ESP OFF"
+        ESPToggle.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+        -- Disable ESP here
+        print("ESP Disabled")
     end
-    
-    Attack() -- Rapid fire handling
-end
+end)
 
--- GUI Setup and initialization
-local hud = CreateHUD()
-
-wait(3) -- Delay start to avoid detection
-
-SetHUDVisible(true)
+-- Return the GUI for loadstring
+return ScreenGui
