@@ -27,7 +27,7 @@ local Features = {
     InfinityJump = false,
     
     -- PVP
-    KillAura = false,
+    KillAura = true,
     KillAuraRange = 25,
     Aimbot = false,
     SilentAim = false,
@@ -38,7 +38,7 @@ local Features = {
     
     -- PVE
     AutoFarm = false,
-    AutoClick = false,
+    AutoClick = true,
     AutoCollect = false,
     AutoQuest = false,
     NPCAim = false,
