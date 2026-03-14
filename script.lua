@@ -26,16 +26,16 @@ local function request(url)
 end
 
 local Features = {
-    Aimbot = false,
+    Aimbot = true,
     SilentAim = false,
     Triggerbot = false,
-    AntiBan = false,
+    AntiBan = true,
     AimFOV = 100,
     AimFOVEnabled = false,
     SkillAimPVP = false,
-    M1AimPVP = false,
+    M1AimPVP = true,
     AutoFarm = false,
-    AutoClick = false,
+    AutoClick = true,
     AutoCollect = false,
     AutoQuest = false,
     SkillAimPVE = false,
