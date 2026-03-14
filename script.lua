@@ -132,7 +132,7 @@ local function CreateFireHubGUI()
     Title.Size = UDim2.new(0, isMobile and 250 or 300, 1, 0)
     Title.Position = UDim2.new(0, 10, 0, 0)
     Title.BackgroundTransparency = 1
-    Title.Text = "🔥 FireHub For Delta 🔥"
+    Title.Text = "🔥 FireHub 🔥"
     Title.TextColor3 = Color3.fromRGB(255, 140, 0)
     Title.TextScaled = true
     Title.Font = Enum.Font.GothamBold
