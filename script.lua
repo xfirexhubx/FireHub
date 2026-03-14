@@ -33,6 +33,7 @@ local Features = {
     M1AimPVE = false,
     NPCAim = false,
     InfiniteYield = false,
+    InfinityJump = false
     Fly = false,
     NoClip = false,
     ESP = false,
