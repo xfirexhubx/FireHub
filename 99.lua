@@ -1,11 +1,3 @@
---[[
-    FIREHUB ULTIMATE V1 | BLOX FRUITS
-    PRIMARY FOCUS: PVP / COMBAT
-    Secondary: Fruit Rain, ESP, Movement
-    Created by: FirePlayz
---]]
-
--- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
