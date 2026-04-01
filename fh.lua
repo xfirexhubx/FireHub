@@ -16,7 +16,7 @@ local colors = {
     cyan = "\27[38;2;0;255;200m"
 }
 
-print(colors.green4 .. "🔥 FireHub Mobile Loaded!" .. colors.reset)
+print(colors.green4 .. "🔥 FireHub Loaded! 🔥" .. colors.reset)
 
 local VALID_KEY_HASH = 0
 local KEY_BYTES = {72, 101, 108, 108, 75, 101, 121}
