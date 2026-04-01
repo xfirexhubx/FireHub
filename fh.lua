@@ -50,7 +50,7 @@ local mainFrame = createFrame(screenGui, UDim2.new(0.05, 0, 0.05, 0), UDim2.new(
 mainFrame.BackgroundTransparency = 0.1
 
 local titleBar = createFrame(mainFrame, UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 0.06, 0), Color3.new(0, 0.2, 0))
-local title = createLabel(titleBar, "🔥 FIREHUB MOBILE | BLOX FRUITS", UDim2.new(0.02, 0, 0, 0), UDim2.new(0.6, 0, 1, 0), Color3.new(0, 1, 0))
+local title = createLabel(titleBar, "🔥 FireHub | Blox Fruits", UDim2.new(0.02, 0, 0, 0), UDim2.new(0.6, 0, 1, 0), Color3.new(0, 1, 0))
 
 local closeBtn = createButton(titleBar, "✕", UDim2.new(0.95, 0, 0, 0), UDim2.new(0.05, 0, 1, 0), function()
     screenGui.Enabled = false
